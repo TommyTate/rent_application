@@ -9,7 +9,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rent_application/helpers/firebase_constants.dart';
 import 'package:rent_application/helpers/message_exception.dart';
+import 'package:rent_application/screens/RegisterAccountScreen.dart';
 import 'package:rent_application/screens/TabNavigator.dart';
+
+
 
 //import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
@@ -186,16 +189,38 @@ class FireBaseAuth {
         );
       } else {
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => TabNavigator()),
+          MaterialPageRoute(builder: (context) => RegisterAccountScreen()),
         );
       }
     } else {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => TabNavigator()),
+        MaterialPageRoute(builder: (context) => RegisterAccountScreen()),
       );
     }
   }
+
+  static Future<Object?> addUser(
+      {required String name,
+      required String uid,
+      required BuildContext context}) async {
+    return fbFirestore
+        .collection('users')
+        .doc(uid)
+        .set({
+          'name': name, // John Doe
+
+          'uid': uid, // 42
+        })
+        .then((value) => Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => TabNavigator()),
+            ))
+        .catchError((error) => print("Failed to add user: $error"));
+  }
+
+
 }
+
+
 
 class LoginResult {}
 
