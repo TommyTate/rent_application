@@ -212,40 +212,43 @@ class _MyAppState extends State<MyApp> {
                     primaryColor: Colors.blue[700],
                     primarySwatch: Colors.blue),
             debugShowCheckedModeBanner: false,
-            home: FutureBuilder(
-                future: Firebase.initializeApp(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    print('error');
-                  } else {
-                    if (currentUser.uid != '') {
-                      //Здесь возвращается нижняя панель навигации
-                      return MaterialApp.router(
-                        debugShowCheckedModeBanner: false,
-                        theme: ThemeData(primarySwatch: Colors.indigo),
-                        routerDelegate: routerDelegate,
-                        routeInformationParser: BeamerParser(),
-                        backButtonDispatcher: BeamerBackButtonDispatcher(
-                          delegate: routerDelegate,
-                        ),
-                      );
-                    } else if (!isLoadUser) {
-                      return AuthScreen();
-                    } else {
-                      return Scaffold(
-                        body: Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    }
+          home: FutureBuilder(
+              future: Firebase.initializeApp(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  print('error');
+                } else {
+                  if (currentUser.uid != '') {
+                    //Здесь возвращается нижняя панель навигации
+                    return ChangeNotifierProvider(
+                      create: (_) => ModelTheme(),
+                      child: Consumer<ModelTheme>(
+                          builder: (context, ModelTheme themeNotifier, child) {
+                        return MaterialApp.router(
+                          debugShowCheckedModeBanner: false,
+                          theme: themeNotifier.isDark
+                              ? ThemeData(
+                                  brightness: Brightness.dark,
+                                )
+                              : ThemeData(
+                                  brightness: Brightness.light,
+                                  primaryColor: Colors.blue[700],
+                                  primarySwatch: Colors.blue),
+                          routerDelegate: routerDelegate,
+                          routeInformationParser: BeamerParser(),
+                          backButtonDispatcher: BeamerBackButtonDispatcher(
+                            delegate: routerDelegate,
+                          ),
+                        );
+                      }),
+                    );
                   }
-                  return Scaffold(
-                    body: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                }));
+                }
+                return Container();
+              }),
+        );
       }),
     );
-  }
+  
+}
 }

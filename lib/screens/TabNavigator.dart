@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:beamer/beamer.dart';
 import 'package:rent_application/screens/DetailScreen.dart';
 import 'package:rent_application/screens/RootScreen.dart';
+import 'package:rent_application/screens/notes/NotesScreen.dart';
+import 'package:rent_application/theme/model_theme.dart';
+import 'package:provider/provider.dart';
 
 class TabNavigator extends StatelessWidget {
   TabNavigator({super.key});
@@ -14,17 +17,30 @@ class TabNavigator extends StatelessWidget {
       },
     ),
   );
+
     @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.indigo),
-      routerDelegate: routerDelegate,
-      routeInformationParser: BeamerParser(),
-      backButtonDispatcher: BeamerBackButtonDispatcher(
-        delegate: routerDelegate,
-      ),
-    );
+    return ChangeNotifierProvider(
+        create: (_) => ModelTheme(),
+        child: Consumer<ModelTheme>(
+            builder: (context, ModelTheme themeNotifier, child) {
+          return MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            theme: themeNotifier.isDark
+                ? ThemeData(
+                    brightness: Brightness.dark,
+                  )
+                : ThemeData(
+                    brightness: Brightness.light,
+                    primaryColor: Colors.blue[700],
+                    primarySwatch: Colors.blue),
+            routerDelegate: routerDelegate,
+            routeInformationParser: BeamerParser(),
+            backButtonDispatcher: BeamerBackButtonDispatcher(
+              delegate: routerDelegate,
+            ),
+          );
+        }));
   }
 
 }
@@ -40,7 +56,7 @@ class TabNavigator extends StatelessWidget {
           key: ValueKey('a'),
           title: 'Tab A',
           type: BeamPageType.noTransition,
-          child: RootScreen(label: 'A', detailsPath: '/a/details'),
+          child: NotesScreen(label: 'A', detailsPath: '/a/details', detailsHomePhonePath: '',),
         ),
         if (state.uri.pathSegments.length == 2)
           const BeamPage(
@@ -71,6 +87,73 @@ class BLocation extends BeamLocation<BeamState> {
           ),
       ];
 }
+
+class CLocation extends BeamLocation<BeamState> {
+  CLocation(super.routeInformation);
+  @override
+  List<String> get pathPatterns => ['/*'];
+
+  @override
+  List<BeamPage> buildPages(BuildContext context, BeamState state) => [
+        const BeamPage(
+          key: ValueKey('c'),
+          title: 'Tab C',
+          type: BeamPageType.noTransition,
+          child: RootScreen(label: 'C', detailsPath: '/c/details'),
+        ),
+        if (state.uri.pathSegments.length == 2)
+          const BeamPage(
+            key: ValueKey('c/details'),
+            title: 'Details C',
+            child: DetailsScreen(label: 'C'),
+          ),
+      ];
+}
+
+class DLocation extends BeamLocation<BeamState> {
+  DLocation(super.routeInformation);
+  @override
+  List<String> get pathPatterns => ['/*'];
+
+  @override
+  List<BeamPage> buildPages(BuildContext context, BeamState state) => [
+        const BeamPage(
+          key: ValueKey('d'),
+          title: 'Tab D',
+          type: BeamPageType.noTransition,
+          child: RootScreen(label: 'D', detailsPath: '/d/details'),
+        ),
+        if (state.uri.pathSegments.length == 2)
+          const BeamPage(
+            key: ValueKey('d/details'),
+            title: 'Details D',
+            child: DetailsScreen(label: 'D'),
+          ),
+      ];
+}
+
+class ELocation extends BeamLocation<BeamState> {
+  ELocation(super.routeInformation);
+  @override
+  List<String> get pathPatterns => ['/*'];
+
+  @override
+  List<BeamPage> buildPages(BuildContext context, BeamState state) => [
+        const BeamPage(
+          key: ValueKey('e'),
+          title: 'Tab E',
+          type: BeamPageType.noTransition,
+          child: RootScreen(label: 'E', detailsPath: '/e/details'),
+        ),
+        if (state.uri.pathSegments.length == 2)
+          const BeamPage(
+            key: ValueKey('e/details'),
+            title: 'Details E',
+            child: DetailsScreen(label: 'E'),
+          ),
+      ];
+}
+
 class ScaffoldWithBottomNavBar extends StatefulWidget {
   const ScaffoldWithBottomNavBar({super.key});
 
@@ -101,6 +184,33 @@ class _ScaffoldWithBottomNavBarState extends State<ScaffoldWithBottomNavBar> {
         return NotFound(path: routeInformation.location!);
       },
     ),
+    BeamerDelegate(
+      initialPath: '/c',
+      locationBuilder: (routeInformation, _) {
+        if (routeInformation.location!.contains('/c')) {
+          return CLocation(routeInformation);
+        }
+        return NotFound(path: routeInformation.location!);
+      },
+    ),
+    BeamerDelegate(
+      initialPath: '/d',
+      locationBuilder: (routeInformation, _) {
+        if (routeInformation.location!.contains('/d')) {
+          return DLocation(routeInformation);
+        }
+        return NotFound(path: routeInformation.location!);
+      },
+    ),
+    BeamerDelegate(
+      initialPath: '/e',
+      locationBuilder: (routeInformation, _) {
+        if (routeInformation.location!.contains('/e')) {
+          return ELocation(routeInformation);
+        }
+        return NotFound(path: routeInformation.location!);
+      },
+    ),
   ];
 
   @override
@@ -115,21 +225,51 @@ class _ScaffoldWithBottomNavBarState extends State<ScaffoldWithBottomNavBar> {
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: [
+                children: [
           Beamer(
             routerDelegate: _routerDelegates[0],
           ),
           Beamer(
             routerDelegate: _routerDelegates[1],
           ),
+          Beamer(
+            routerDelegate: _routerDelegates[2],
+          ),
+          Beamer(
+            routerDelegate: _routerDelegates[3],
+          ),
+          Beamer(
+            routerDelegate: _routerDelegates[4],
+          ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
         currentIndex: _currentIndex,
-        items: const [
-          BottomNavigationBarItem(label: 'Section A', icon: Icon(Icons.home)),
+        items: [
           BottomNavigationBarItem(
-              label: 'Section B', icon: Icon(Icons.settings)),
+              label: 'Section A',
+              icon: Icon(
+                Icons.assignment_outlined,
+                color: Theme.of(context).unselectedWidgetColor,
+              )),
+          BottomNavigationBarItem(
+              label: 'Section B',
+              icon: Icon(Icons.email_outlined,
+                  color: Theme.of(context).unselectedWidgetColor)),
+          BottomNavigationBarItem(
+              label: 'Section C',
+              icon: Icon(Icons.add_circle_outline,
+                  color: Theme.of(context).unselectedWidgetColor)),
+          BottomNavigationBarItem(
+              label: 'Section D',
+              icon: Icon(Icons.calculate,
+                  color: Theme.of(context).unselectedWidgetColor)),
+          BottomNavigationBarItem(
+              label: 'Section E',
+              icon: Icon(Icons.search,
+                  color: Theme.of(context).unselectedWidgetColor)),
         ],
         onTap: (index) {
           if (index != _currentIndex) {
