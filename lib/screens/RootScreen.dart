@@ -24,16 +24,16 @@ class _RootScreenState extends State<RootScreen> {
   
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback(alertFirst);
+    //WidgetsBinding.instance.addPostFrameCallback(alertFirst);
     super.initState();
   }
   
-  void alertFirst(_) {
-    // Первое привествие
-    Future.delayed(Duration(seconds: 0), () {
-      showDialog(context: context, builder: (context) => FirstAlertDialog());
-    });
-  }
+  // void alertFirst(_) {
+  //   // Первое привествие
+  //   Future.delayed(Duration(seconds: 0), () {
+  //     showDialog(context: context, builder: (context) => FirstAlertDialog());
+  //   });
+  // }
 
 
 

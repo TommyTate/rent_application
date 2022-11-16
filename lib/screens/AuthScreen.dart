@@ -189,6 +189,7 @@ final _pinPutController = TextEditingController();
                                             MediaQuery.of(context).size.width /
                                                 10),
                                     child: PinPut(
+                                     
                                         onSubmit: (value) async {
                                           try {
                                             bool value =
@@ -209,6 +210,7 @@ final _pinPutController = TextEditingController();
                                           }
                                         },
                                         controller: _pinPutController,
+
                                         fieldsCount: 6,
                                         fieldsAlignment:
                                             MainAxisAlignment.spaceAround,

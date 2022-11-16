@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:beamer/beamer.dart';
 import 'package:rent_application/screens/DetailScreen.dart';
-import 'package:rent_application/screens/RootScreen.dart';
+import 'package:rent_application/screens/notes/NoteApartmentsScreen.dart';
+import 'package:rent_application/screens/notes/NoteHomePhoneDetailScreen.dart';
 import 'package:rent_application/screens/notes/NotesScreen.dart';
-import 'package:rent_application/theme/model_theme.dart';
+import 'package:rent_application/screens/RootScreen.dart';
 import 'package:provider/provider.dart';
+import 'package:rent_application/theme/model_theme.dart';
 
 class TabNavigator extends StatelessWidget {
   TabNavigator({super.key});
@@ -18,7 +20,7 @@ class TabNavigator extends StatelessWidget {
     ),
   );
 
-    @override
+  @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
         create: (_) => ModelTheme(),
@@ -42,10 +44,11 @@ class TabNavigator extends StatelessWidget {
           );
         }));
   }
-
 }
 
-  class ALocation extends BeamLocation<BeamState> {
+/// Location defining the pages for the first tab
+// Первый шаг
+class ALocation extends BeamLocation<BeamState> {
   ALocation(super.routeInformation);
   @override
   List<String> get pathPatterns => ['/*'];
@@ -56,16 +59,35 @@ class TabNavigator extends StatelessWidget {
           key: ValueKey('a'),
           title: 'Tab A',
           type: BeamPageType.noTransition,
-          child: NotesScreen(label: 'A', detailsPath: '/a/details', detailsHomePhonePath: '',),
+          child: NotesScreen(
+              label: 'A',
+              detailsPath: '/a/notedetails',
+              detailsHomePhonePath: '/a/notedetails/notehomephonedetails',
+              detailsApartmentsPath: '/a/notedetails/noteapartmentdetails'),
         ),
-        if (state.uri.pathSegments.length == 2)
+        if (state.uri.pathSegments.length == 3 &&
+            state.uri.path == '/a/notedetails/notehomephonedetails')
           const BeamPage(
-            key: ValueKey('a/details'),
-            title: 'Details A',
-            child: DetailsScreen(label: 'A'),
+            key: ValueKey('/a/notedetails/notehomephonedetails'),
+            title: 'Details Note',
+            child: NoteHomePhoneDetailScreen(
+                label: 'Note',
+                detailsHomePhonePath: '/a/notedetails/notehomephonedetails'),
+          ),
+        if (state.uri.pathSegments.length == 3 &&
+            state.uri.path == '/a/notedetails/noteapartmentdetails')
+          const BeamPage(
+            key: ValueKey('/a/notedetails/notehomephonedetails'),
+            title: 'Details Note',
+            child: NoteApartmentsScreen(
+                label: 'Note',
+                detailsApartmentPath: '/a/notedetails/noteapartmentdetails'),
           ),
       ];
 }
+
+/// Location defining the pages for the second tab
+// Второй шаг
 class BLocation extends BeamLocation<BeamState> {
   BLocation(super.routeInformation);
   @override
@@ -154,6 +176,8 @@ class ELocation extends BeamLocation<BeamState> {
       ];
 }
 
+/// A widget class that shows the BottomNavigationBar and performs navigation
+/// between tabs
 class ScaffoldWithBottomNavBar extends StatefulWidget {
   const ScaffoldWithBottomNavBar({super.key});
 
@@ -225,7 +249,7 @@ class _ScaffoldWithBottomNavBarState extends State<ScaffoldWithBottomNavBar> {
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-                children: [
+        children: [
           Beamer(
             routerDelegate: _routerDelegates[0],
           ),
@@ -281,4 +305,3 @@ class _ScaffoldWithBottomNavBarState extends State<ScaffoldWithBottomNavBar> {
     );
   }
 }
-
